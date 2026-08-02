@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal — content, decoupled</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F1115;
+    --bg-card: #171A21;
+    --ink: #EDEDE5;
+    --ink-dim: #8A8F98;
+    --signal: #FFB238;
+    --line: #262A33;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px;}
+
+  /* NAV */
+  nav{
+    position:sticky;top:0;z-index:20;
+    background:rgba(15,17,21,0.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .logo{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:14px;letter-spacing:0.08em;display:flex;align-items:center;gap:8px;}
+  .logo::before{content:'';width:8px;height:8px;background:var(--signal);border-radius:2px;display:inline-block;}
+  .nav-links{display:flex;gap:32px;font-size:14px;color:var(--ink-dim);}
+  .nav-links a:hover{color:var(--ink);}
+
+  /* HERO */
+  .hero{padding:96px 0 88px;border-bottom:1px solid var(--line);}
+  .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--signal);
+    letter-spacing:0.12em;text-transform:uppercase;margin-bottom:20px;display:block;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:52px;line-height:1.05;
+    letter-spacing:-0.02em;margin-bottom:24px;
+  }
+  h1 em{font-style:italic;font-weight:500;color:var(--signal);}
+  .hero p{color:var(--ink-dim);font-size:16px;max-width:420px;margin-bottom:28px;}
+  .cta-row{display:flex;gap:12px;}
+  .btn{
+    font-size:14px;font-weight:600;padding:12px 20px;border-radius:6px;
+    border:1px solid var(--line);transition:all .15s ease;
+  }
+  .btn-primary{background:var(--signal);color:#171100;border-color:var(--signal);}
+  .btn-primary:hover{opacity:0.88;}
+  .btn-ghost:hover{border-color:var(--ink-dim);}
+
+  /* Signature element: JSON -> Card morph */
+  .morph{
+    position:relative;height:340px;
+    border-radius:12px;overflow:hidden;
+    border:1px solid var(--line);
+    background:var(--bg-card);
+  }
+  .morph-json{
+    position:absolute;inset:0;padding:24px;
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.75;
+    color:#8FE3A0;
+    animation: fadeJson 8s infinite;
+  }
+  .morph-json .key{color:#7FB8FF;}
+  .morph-json .str{color:#FFD37F;}
+  .morph-json .punc{color:#5A6270;}
+  .morph-card{
+    position:absolute;inset:0;padding:24px;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    background:linear-gradient(180deg, rgba(23,26,33,0) 0%, rgba(23,26,33,0.95) 65%), url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=60') center/cover;
+    opacity:0;
+    animation: fadeCard 8s infinite;
+  }
+  .morph-card .tag{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--signal);
+    letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;
+  }
+  .morph-card h3{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:6px;}
+  .morph-card p{font-size:13px;color:#C7C9CE;}
+  .morph-arrow{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:36px;height:36px;border-radius:50%;background:var(--bg);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;color:var(--ink-dim);font-size:14px;
+    z-index:5;
+  }
+  @keyframes fadeJson{
+    0%,38%{opacity:1;} 50%,100%{opacity:0;}
+  }
+  @keyframes fadeCard{
+    0%,38%{opacity:0;} 50%,88%{opacity:1;} 100%{opacity:0;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .morph-json, .morph-card{animation:none;}
+    .morph-card{opacity:1;}
+    .morph-json{display:none;}
+  }
+
+  /* ARTICLES */
+  .section{padding:80px 0;}
+  .section-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:40px;}
+  .section-head h2{font-family:'Fraunces',serif;font-size:28px;font-weight:600;}
+  .section-head span{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .card{
+    background:var(--bg-card);border:1px solid var(--line);border-radius:10px;
+    overflow:hidden;transition:transform .18s ease, border-color .18s ease;
+    display:flex;flex-direction:column;
+  }
+  .card:hover{transform:translateY(-3px);border-color:#3a3f4a;}
+  .card-cover{height:150px;background-size:cover;background-position:center;}
+  .card-body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1;}
+  .card-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--signal);letter-spacing:0.06em;text-transform:uppercase;}
+  .card-body h3{font-family:'Fraunces',serif;font-size:19px;font-weight:600;line-height:1.25;}
+  .card-body p{font-size:13.5px;color:var(--ink-dim);flex:1;}
+  .card-footer{font-size:12px;color:#5A6270;display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--line);}
+
+  /* CODE / HOW IT WORKS */
+  .how{background:var(--bg-card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .how .wrap{padding:80px 32px;}
+  .how h2{font-family:'Fraunces',serif;font-size:26px;font-weight:600;margin-bottom:12px;}
+  .how > .wrap > p{color:var(--ink-dim);font-size:14.5px;max-width:560px;margin-bottom:32px;}
+  .how-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+  .step{border:1px solid var(--line);border-radius:8px;padding:20px;background:var(--bg);}
+  .step .n{font-family:'JetBrains Mono',monospace;color:var(--signal);font-size:12px;margin-bottom:8px;display:block;}
+  .step h4{font-size:14.5px;font-weight:600;margin-bottom:8px;}
+  .step p{font-size:13px;color:var(--ink-dim);margin-bottom:10px;}
+  pre{
+    background:#0B0D11;border:1px solid var(--line);border-radius:6px;
+    padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#9FD8A6;
+    overflow-x:auto;
+  }
+  .pill{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--ink-dim);background:var(--bg-card);border:1px solid var(--line);
+    padding:3px 8px;border-radius:20px;margin-bottom:16px;
+  }
+
+  footer{padding:40px 0;text-align:center;color:#5A6270;font-size:12.5px;}
+
+  @media (max-width: 860px){
+    .hero-grid, .how-grid{grid-template-columns:1fr;}
+    .grid{grid-template-columns:1fr;}
+    h1{font-size:38px;}
+    .nav-links{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">SIGNAL</div>
+    <div class="nav-links">
+      <a href="#articles">Articles</a>
+      <a href="#how">How it's built</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Powered by Strapi</span>
+      <h1>Content as <em>data</em>.<br>Design as you like.</h1>
+      <p>This page is what a headless CMS looks like in practice: the words and images below live as structured entries in Strapi, and this front end just asks for them and decides how to show them.</p>
+      <div class="cta-row">
+        <a href="#articles" class="btn btn-primary">See the articles</a>
+        <a href="#how" class="btn btn-ghost">How it's built</a>
+      </div>
+    </div>
+    <div class="morph">
+      <div class="morph-json"><span class="punc">{</span>
+  <span class="key">"title"</span><span class="punc">:</span> <span class="str">"Why headless CMS?"</span><span class="punc">,</span>
+  <span class="key">"category"</span><span class="punc">:</span> <span class="str">"Architecture"</span><span class="punc">,</span>
+  <span class="key">"excerpt"</span><span class="punc">:</span> <span class="str">"Separating content
+    from presentation..."</span><span class="punc">,</span>
+  <span class="key">"cover"</span><span class="punc">:</span> <span class="str">"/uploads/cover.jpg"</span><span class="punc">,</span>
+  <span class="key">"author"</span><span class="punc">:</span> <span class="str">"E. Ramírez"</span><span class="punc">,</span>
+  <span class="key">"publishedAt"</span><span class="punc">:</span> <span class="str">"2026-07-14"</span>
+<span class="punc">}</span></div>
+      <div class="morph-arrow">→</div>
+      <div class="morph-card">
+        <span class="tag">Architecture</span>
+        <h3>Why headless CMS?</h3>
+        <p>Separating content from presentation, and what it buys you.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="articles">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Latest articles</h2>
+      <span>GET /api/articles?populate=*</span>
+    </div>
+    <div class="grid" id="article-grid"></div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="wrap">
+    <span class="pill">demo mode — mock data, real shape</span>
+    <h2>How this page is actually wired</h2>
+    <p>The cards above aren't hardcoded HTML — they're rendered from an array shaped exactly like Strapi's REST response. Point <code>API_URL</code> below at a real Strapi instance and the mock array disappears.</p>
+    <div class="how-grid">
+      <div class="step">
+        <span class="n">01 — Model the content</span>
+        <h4>Define a content type</h4>
+        <p>In the Strapi admin, create an "Article" collection with fields: title, excerpt, body, cover image, category, author.</p>
+        <pre>npx create-strapi-app@latest signal-cms
+cd signal-cms &amp;&amp; npm run develop</pre>
+      </div>
+      <div class="step">
+        <span class="n">02 — Fetch it from the front end</span>
+        <h4>Call the REST API</h4>
+        <p>This is the real fetch this page would use once a Strapi server is running locally.</p>
+        <pre>const res = await fetch(
+  'http://localhost:1337/api/articles?populate=*'
+);
+const { data } = await res.json();</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Demo page for exploring Strapi's content model. Article data below is mocked in-browser — no live server required to view it.
+</footer>
+
+<script>
+  // Mock data shaped like Strapi's REST API response
+  // (data: [{ id, attributes: {...} }]) — swap fetchArticles() for a real
+  // call to http://localhost:1337/api/articles?populate=* once Strapi is running.
+  const mockStrapiResponse = {
+    data: [
+      {
+        id: 1,
+        attributes: {
+          title: "Why headless CMS?",
+          category: "Architecture",
+          excerpt: "Separating content from presentation, and what it actually buys you day to day.",
+          author: "E. Ramírez",
+          publishedAt: "2026-07-14",
+          cover: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&q=60"
+        }
+      },
+      {
+        id: 2,
+        attributes: {
+          title: "Modeling your first collection type",
+          category: "Tutorial",
+          excerpt: "Fields, relations, and components — the building blocks Strapi gives you.",
+          author: "E. Ramírez",
+          publishedAt: "2026-07-09",
+          cover: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&q=60"
+        }
+      },
+      {
+        id: 3,
+        attributes: {
+          title: "Roles, permissions, and the public API",
+          category: "Security",
+          excerpt: "What to expose publicly, what to lock behind an API token, and why it matters.",
+          author: "E. Ramírez",
+          publishedAt: "2026-06-28",
+          cover: "https://images.unsplash.com/photo-1550439062-609e1531270e?w=500&q=60"
+        }
+      }
+    ]
+  };
+
+  const API_URL = 'http://localhost:1337/api/articles?populate=*';
+
+  async function fetchArticles(){
+  const res = await fetch(API_URL);
+  const json = await res.json();
+  return json.data.map(item => ({
+    id: item.id,
+    attributes: {
+      title: item.title,
+      category: item.category,
+      excerpt: item.excerpt,
+      author: item.author,
+      publishedAt: item.publishedAt,
+      cover: item.cover?.url ? `http://localhost:1337${item.cover.url}` : ''
+    }
+  }));
+  // note: Strapi 5's JSON is flatter than v4 (no .attributes wrapper),
+  // the mapping above normalizes it back to the shape renderArticles() expects
+  }
+
+  function formatDate(iso){
+    return new Date(iso).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+
+  function renderArticles(articles){
+    const grid = document.getElementById('article-grid');
+    grid.innerHTML = articles.map(({attributes:a}) => `
+      <article class="card">
+        <div class="card-cover" style="background-image:url('${a.cover}')"></div>
+        <div class="card-body">
+          <span class="card-meta">${a.category}</span>
+          <h3>${a.title}</h3>
+          <p>${a.excerpt}</p>
+          <div class="card-footer">
+            <span>${a.author}</span>
+            <span>${formatDate(a.publishedAt)}</span>
+          </div>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  fetchArticles().then(renderArticles);
+</script>
+
+</body>
+</html>
